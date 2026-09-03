@@ -1,0 +1,108 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R ] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+5 0 obj
+<< /Length 994 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(STATE AEROSPACE & DEFENSE CORPORATION \(HAL/SADC\)) '
+(REQUEST FOR PROPOSAL \(RFP\)) '
+(Tender Title: Aerospace Precision Digitalization & Advanced Manufacturing Execution System \(MES\)) '
+(Reference Number: HAL/2026/AERO-MES-404) '
+(Estimated Project Value: INR 12.00 Crore \(INR 120,000,000\)) '
+(Bid Submission Deadline: 21 Days from Publication Date) '
+(Project Location: Heavy Aerospace Assembly & Defense Hangar) '
+() '
+(SECTION 1: DEFENSE & AEROSPACE MANDATORY ELIGIBILITY) '
+(1.1 Aerospace Operational History:) '
+(The Bidder MUST have at least 10 continuous years of operational experience strictly in Aerospace Manufacturing, Avionics Line Automation, and Defense Electronics Supply.) '
+(1.2 Specialized Defense Domain:) '
+(General software vendors or commodity trading firms are strictly disqualified from bidding.) '
+(1.3 Security Clearance:) '
+(The Bidder must possess Secret-level facility security clearance issued by the Ministry of Defense.) '
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 7 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+7 0 obj
+<< /Length 757 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SECTION 2: MANDATORY COMMERCIAL TURNOVER & AEROSPACE CERTIFICATIONS) '
+(2.1 Substantial Aerospace Turnover Requirement:) '
+(The Bidder MUST have an average annual audited turnover of NOT LESS THAN INR 25.00 Crore \(INR 250,000,000\) specifically derived from aerospace/defense engineering contracts.) '
+(2.2 Mandatory AS9100 Rev D Certification:) '
+(The Bidder MUST possess a valid and active AS9100 Rev D \(Aerospace Quality Management System\) certification. Standard IT ISO 9001 alone will NOT be accepted and constitutes grounds for immediate disqualification.) '
+(2.3 Environmental Certification:) '
+(Active ISO 14001 Environmental Management System certification is mandatory for all shopfloor robotics deployments.) '
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 9 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+9 0 obj
+<< /Length 704 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SECTION 3: AEROSPACE CNC/PLC INTEGRATION & FLIGHT COMPONENT TRACEABILITY) '
+(3.1 Aerospace CNC/PLC Machine Interfacing:) '
+(The system must interface directly with 5-axis CNC titanium milling machinery and PLC controllers across the defense aircraft hangar.) '
+(3.2 Production Line Traceability & AS9102 First Article Inspection:) '
+(The MES platform must enforce AS9102 First Article Inspection workflows and full metallurgical batch lot traceability for turbine components.) '
+(3.3 ITAR & Military Standard Compliance:) '
+(All telemetry software must strictly comply with ITAR regulations, MIL-STD-810 environmental durability specs, and DO-178C software compliance.) '
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 11 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+11 0 obj
+<< /Length 781 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SECTION 4: KEY AEROSPACE STAFFING, RAPID SCHEDULE & SEVERE PENALTIES) '
+(4.1 Specialized Aerospace Avionics Bench:) '
+(The Bidder must assign a full-time Lead Avionics System Engineer possessing a Master degree in Aeronautical Engineering and 15+ years of aircraft assembly line automation experience.) '
+(4.2 Rapid Prototype Schedule:) '
+(An operational on-premise hardware prototype interfacing with physical CNC machine cells must be fully commissioned within 60 Days.) '
+(4.3 Severe Liquidated Damages:) '
+(Milestone delays will attract liquidated damages of 2% per week of delay up to a maximum cap of 20% of total contract value.) '
+(4.4 High Value EMD Commitment:) '
+(Mandatory EMD deposit of INR 2,400,000 via irrevocable Bank Guarantee.) '
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000019 00000 n 
+0000000068 00000 n 
+0000000146 00000 n 
+0000000216 00000 n 
+0000000342 00000 n 
+0000001387 00000 n 
+0000001513 00000 n 
+0000002321 00000 n 
+0000002447 00000 n 
+0000003202 00000 n 
+0000003330 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+4163
+%%EOF

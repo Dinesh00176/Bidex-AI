@@ -1,0 +1,86 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /Name /F1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 764 >>
+stream
+BT
+/F1 11 Tf
+50 740 Td
+16 TL
+(NOTICE INVITING TENDER \(NIT\) - CLOUD HEALTHCARE INFORMATION SYSTEM) '
+(Tender Reference Number: HMIS-HEALTH-2026-042) '
+(Issuing Authority: State Directorate of Medical Health & Family Welfare) '
+(Project: Enterprise Cloud Hospital Management & Telemedicine System) '
+(Estimated Contract Value: INR 4,20,00,000 \(INR 4.20 Crore\)) '
+(Submission Deadline: 21 Days from Publication) '
+(SECTION 1: PROJECT SCOPE & OBJECTIVES) '
+(1.1 Proposals are invited for design, cloud hosting, rollout, and support of a unified,) '
+(HIPAA and DISHA compliant Cloud Hospital Information Management System \(HMIS\) across 15 hospitals.) '
+(1.2 The system will handle outpatient registration, IPD EHR records, laboratory analytics, and billing.) '
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+6 0 obj
+<< /Length 483 >>
+stream
+BT
+/F1 11 Tf
+50 740 Td
+16 TL
+(SECTION 2: ELIGIBILITY & FINANCIAL QUALIFICATIONS) '
+(2.1 Industry Experience: Minimum 4 years of operational experience in deploying healthcare IT platforms.) '
+(2.2 Turnover Requirement: Average annual turnover of not less than INR 3.50 Crore during the last 3 years.) '
+(2.3 Past Deployments: Bidder must have successfully deployed at least 2 hospital systems of 300+ beds.) '
+(2.4 EMD: Bank Guarantee of INR 8,40,000 \(2% of estimated value\).) '
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 6 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+8 0 obj
+<< /Length 467 >>
+stream
+BT
+/F1 11 Tf
+50 740 Td
+16 TL
+(SECTION 3: TECHNICAL & DATA SECURITY STANDARDS) '
+(3.1 Certifications: Valid ISO 27001:2013 and ISO 20000-1 certifications are mandatory.) '
+(3.2 Compliance: Adherence to National Digital Health Mission \(ABDM\) standards and HL7 FHIR protocols.) '
+(3.3 Cloud Hosting: Data residency must strictly remain within local certified Tier-III data centers.) '
+(3.4 Backup & Disaster Recovery: Maximum RPO of 15 minutes and RTO of 1 hour.) '
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 8 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+xref
+0 10
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000127 00000 n
+0000000207 00000 n
+0000001022 00000 n
+0000001148 00000 n
+0000001682 00000 n
+0000001808 00000 n
+0000002326 00000 n
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+2452
+%%EOF

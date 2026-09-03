@@ -1,0 +1,297 @@
+{
+  "metadata": {
+    "modelVersion": "bidexa-v1.0.0",
+    "featureSchemaVersion": "bidexa-features-v1",
+    "modelType": "L2-Regularized Calibrated Linear Classifier",
+    "trainedAt": "2026-09-03T08:23:36.622Z",
+    "datasetSource": "DEMO SYNTHETIC DATA",
+    "totalDatasetCount": 500,
+    "trainingSampleCount": 349,
+    "validationSampleCount": 74,
+    "testSampleCount": 77,
+    "classDistribution": {
+      "totalPositives": 158,
+      "totalNegatives": 342,
+      "winRatio": 0.316
+    },
+    "crossValidation": {
+      "method": "5-Fold Stratified Cross-Validation",
+      "f1Mean": 0.3976,
+      "f1Std": 0.487
+    },
+    "evaluationMetrics": {
+      "train": {
+        "sampleCount": 349,
+        "positives": 110,
+        "negatives": 239,
+        "confusionMatrix": {
+          "tp": 110,
+          "fp": 30,
+          "tn": 209,
+          "fn": 0
+        },
+        "accuracy": 0.914,
+        "precision": 0.7857,
+        "recall": 1,
+        "f1Score": 0.88,
+        "rocAuc": 0.9841,
+        "brierScore": 0.0544
+      },
+      "validation": {
+        "sampleCount": 74,
+        "positives": 23,
+        "negatives": 51,
+        "confusionMatrix": {
+          "tp": 23,
+          "fp": 4,
+          "tn": 47,
+          "fn": 0
+        },
+        "accuracy": 0.9459,
+        "precision": 0.8519,
+        "recall": 1,
+        "f1Score": 0.92,
+        "rocAuc": 0.9787,
+        "brierScore": 0.045
+      },
+      "test": {
+        "sampleCount": 77,
+        "positives": 25,
+        "negatives": 52,
+        "confusionMatrix": {
+          "tp": 25,
+          "fp": 7,
+          "tn": 45,
+          "fn": 0
+        },
+        "accuracy": 0.9091,
+        "precision": 0.7813,
+        "recall": 1,
+        "f1Score": 0.8772,
+        "rocAuc": 0.9777,
+        "brierScore": 0.0597
+      }
+    },
+    "generalizationCheck": {
+      "qualityGateStatus": "PASSED",
+      "f1Gap": 0.0028,
+      "accuracyGap": 0.0049,
+      "warnings": [],
+      "passed": true
+    },
+    "featureImportance": [
+      {
+        "featureName": "certification_match_ratio",
+        "weight": 0.620758,
+        "importance": 0.620758,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "match_pass_rate",
+        "weight": 0.500495,
+        "importance": 0.500495,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "match_partial_rate",
+        "weight": -0.451891,
+        "importance": 0.451891,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "technical_match_ratio",
+        "weight": 0.437407,
+        "importance": 0.437407,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "company_cert_count",
+        "weight": 0.385354,
+        "importance": 0.385354,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "company_industry_match",
+        "weight": 0.34575,
+        "importance": 0.34575,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "match_missing_count",
+        "weight": -0.328261,
+        "importance": 0.328261,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "company_turnover_cr",
+        "weight": 0.299337,
+        "importance": 0.299337,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "company_employee_count",
+        "weight": 0.212303,
+        "importance": 0.212303,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "match_conflict_count",
+        "weight": -0.200602,
+        "importance": 0.200602,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "mandatory_failure_count",
+        "weight": -0.191374,
+        "importance": 0.191374,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "tender_financial_req_count",
+        "weight": 0.161358,
+        "importance": 0.161358,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "tender_mandatory_req_count",
+        "weight": -0.139193,
+        "importance": 0.139193,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "company_experience_years",
+        "weight": 0.114399,
+        "importance": 0.114399,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "tender_page_count",
+        "weight": 0.113911,
+        "importance": 0.113911,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "tender_total_req_count",
+        "weight": -0.077392,
+        "importance": 0.077392,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "tender_optional_req_count",
+        "weight": 0.070482,
+        "importance": 0.070482,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "tender_estimated_value_cr",
+        "weight": -0.055668,
+        "importance": 0.055668,
+        "direction": "NEGATIVE"
+      },
+      {
+        "featureName": "tender_tech_req_count",
+        "weight": 0.055667,
+        "importance": 0.055667,
+        "direction": "POSITIVE"
+      },
+      {
+        "featureName": "company_tech_skill_count",
+        "weight": 0.040834,
+        "importance": 0.040834,
+        "direction": "POSITIVE"
+      }
+    ]
+  },
+  "scaler": {
+    "means": [
+      10.527593,
+      5.335244,
+      54.945559,
+      1.146132,
+      5.083095,
+      0.448424,
+      10.315702,
+      5.412607,
+      12.547278,
+      8.292264,
+      4.255014,
+      4.467049,
+      1.481375,
+      0.462645,
+      0.176989,
+      2.409742,
+      3.323782,
+      1.899713,
+      0.388822,
+      0.386819
+    ],
+    "stds": [
+      8.465354,
+      3.434936,
+      41.119156,
+      1.003643,
+      3.148925,
+      0.474482,
+      4.412417,
+      2.296493,
+      2.882846,
+      2.199368,
+      1.178002,
+      1.126486,
+      0.499653,
+      0.32585,
+      0.091218,
+      2.449728,
+      2.259911,
+      1.98381,
+      0.39302,
+      0.458224
+    ]
+  },
+  "weights": [
+    0.299337,
+    0.114399,
+    0.212303,
+    0.385354,
+    0.040834,
+    0.34575,
+    -0.055668,
+    0.113911,
+    -0.077392,
+    -0.139193,
+    0.070482,
+    0.055667,
+    0.161358,
+    0.500495,
+    -0.451891,
+    -0.200602,
+    -0.328261,
+    -0.191374,
+    0.437407,
+    0.620758
+  ],
+  "bias": -1.129333,
+  "featureNames": [
+    "company_turnover_cr",
+    "company_experience_years",
+    "company_employee_count",
+    "company_cert_count",
+    "company_tech_skill_count",
+    "company_industry_match",
+    "tender_estimated_value_cr",
+    "tender_page_count",
+    "tender_total_req_count",
+    "tender_mandatory_req_count",
+    "tender_optional_req_count",
+    "tender_tech_req_count",
+    "tender_financial_req_count",
+    "match_pass_rate",
+    "match_partial_rate",
+    "match_conflict_count",
+    "match_missing_count",
+    "mandatory_failure_count",
+    "technical_match_ratio",
+    "certification_match_ratio"
+  ],
+  "featureSchemaVersion": "bidexa-features-v1"
+}

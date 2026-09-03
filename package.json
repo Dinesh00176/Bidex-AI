@@ -1,0 +1,24 @@
+{
+  "name": "bidwise-ai",
+  "version": "1.0.0",
+  "description": "BidWise AI — AI-Powered Tender Intelligence & Bid Decision Platform",
+  "private": true,
+  "scripts": {
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "test:backend": "cd backend && npm test",
+    "seed": "cd backend && npm run seed"
+  },
+  "keywords": [
+    "tender-intelligence",
+    "bid-decision",
+    "procurement",
+    "genai",
+    "gemini",
+    "mern"
+  ],
+  "author": "BidWise AI Team",
+  "license": "MIT"
+}

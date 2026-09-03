@@ -1,0 +1,112 @@
+%PDF-1.4
+%âãÏÓ
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R 10 0 R ] /Count 4 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 5 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+5 0 obj
+<< /Length 1044 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SMART URBAN INFRASTRUCTURE AUTHORITY \(SUIA\)) '
+(REQUEST FOR PROPOSAL \(RFP\)) '
+(Tender Title: Smart City Integrated IoT Command & Cloud Infrastructure Platform) '
+(Reference Number: SUIA/2026/IOT-RFP-098) '
+(Estimated Project Value: INR 8.50 Crore \(INR 85,000,000\)) '
+(Bid Submission Deadline: 30 Days from Notice Date) '
+(Project Execution Location: Central Command Facility and City Smart Zones) '
+() '
+(SECTION 1: STATUTORY ELIGIBILITY CRITERIA) '
+(1.1 Legal Status and Incorporation:) '
+(The Bidder must be a registered legal corporate entity under the Companies Act in continuous commercial operation for at least 5 years.) '
+(1.2 Industry Specialization:) '
+(The Bidder must demonstrate proven operational experience in Information Technology, Cloud Infrastructure, and Enterprise Software Solutions.) '
+(1.3 Non-Blacklisting Declaration:) '
+(The Bidder must submit a formal affidavit on non-judicial stamp paper confirming the firm is not blacklisted by any Central or State Government authority.) '
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 7 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+7 0 obj
+<< /Length 879 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SECTION 2: FINANCIAL & ACCREDITED CERTIFICATION QUALIFICATIONS) '
+(2.1 Minimum Average Annual Financial Turnover:) '
+(The Bidder must have an average annual turnover of not less than INR 5.00 Crore \(INR 50,000,000\) during the preceding three audited financial years. CA audit certificate with UDIN must be enclosed.) '
+(2.2 Positive Net Worth:) '
+(The Bidder must possess a positive net worth as of the latest audited balance sheet.) '
+(2.3 Mandatory Quality & Security Certifications:) '
+(The Bidder MUST hold active and accredited ISO 9001:2015 \(Quality Management System\) and ISO/IEC 27001 \(Information Security Management\) certifications on the date of bid submission.) '
+(2.4 Optional Capability Appraisal:) '
+(CMMI Maturity Level 3 or higher appraisal is preferred and will receive supplementary technical evaluation consideration.) '
+ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 9 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+9 0 obj
+<< /Length 866 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SECTION 3: TECHNICAL ARCHITECTURE & PLATFORM SPECIFICATIONS) '
+(3.1 Technology Stack & Microservices Architecture:) '
+(The core IoT Command platform must be engineered using Java, Spring Boot, React, Node.js, and REST APIs, deployed on AWS Cloud Infrastructure with container orchestration \(Docker/Kubernetes\).) '
+(3.2 High-Throughput IoT Ingestion:) '
+(The platform architecture must reliably ingest, validate, and process real-time telemetry from at least 10,000 edge IoT sensor devices concurrently.) '
+(3.3 High Availability & Uptime SLA:) '
+(The production cloud system must deliver a minimum 99.9% High Availability SLA with active-passive automated failover and sub-second latency response.) '
+(3.4 Data Security & Encryption:) '
+(All data at rest must be encrypted using AES-256 and data in transit via TLS 1.3 protocol.) '
+ET
+endstream
+endobj
+10 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 11 0 R /Resources << /Font << /F1 3 0 R >> >> >>
+endobj
+11 0 obj
+<< /Length 855 >>
+stream
+BT /F1 10 Tf 40 780 Td 14 TL
+(SECTION 4: KEY PERSONNEL BENCH, PROJECT SCHEDULE & COMMERCIAL TERMS) '
+(4.1 Key Personnel & Engineering Bench:) '
+(The Bidder must field dedicated key personnel including a certified Project Manager \(PMP/PRINCE2 with 8+ years experience\) and a Senior Cloud Solution Architect. Total engineering headcount must be at least 40 full-time staff.) '
+(4.2 Project Implementation Schedule:) '
+(Complete supply, deployment, and commissioning must be achieved within 180 Days from contract signing date.) '
+(4.3 Earnest Money Deposit \(EMD\):) '
+(An EMD of 2% of total estimated tender value \(INR 1,700,000\) in the form of an irrevocable Bank Guarantee must be furnished.) '
+(4.4 Liquidated Damages:) '
+(Delay in commissioning shall attract liquidated damages at 0.5% per week up to a ceiling of 10% of total contract value.) '
+ET
+endstream
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000019 00000 n 
+0000000068 00000 n 
+0000000146 00000 n 
+0000000216 00000 n 
+0000000342 00000 n 
+0000001438 00000 n 
+0000001564 00000 n 
+0000002494 00000 n 
+0000002620 00000 n 
+0000003537 00000 n 
+0000003665 00000 n 
+trailer
+<< /Size 12 /Root 1 0 R >>
+startxref
+4572
+%%EOF
