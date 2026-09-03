@@ -70,18 +70,6 @@ const fallbackExtractRequirements = (extractedPages = [], tenderMeta = {}) => {
       sourceText: getPageSnippet(page, snippet),
       confidence: 0.94
     });
-  } else {
-    requirements.push({
-      category: normalizeRequirementCategory('Experience'),
-      title: 'Prior Domain Experience',
-      description: 'Demonstrated past experience in executing enterprise scale solutions.',
-      value: 5,
-      unit: 'Years',
-      mandatory: true,
-      sourcePage: 1,
-      sourceText: 'Demonstrated past project execution experience required.',
-      confidence: 0.88
-    });
   }
 
   // -------------------------------------------------------------
@@ -102,18 +90,6 @@ const fallbackExtractRequirements = (extractedPages = [], tenderMeta = {}) => {
       sourcePage: page,
       sourceText: getPageSnippet(page, 'turnover'),
       confidence: 0.95
-    });
-  } else {
-    requirements.push({
-      category: normalizeRequirementCategory('Financial'),
-      title: 'Minimum Annual Turnover',
-      description: 'Average annual financial turnover requirement for the preceding 3 fiscal years.',
-      value: 50000000,
-      unit: 'INR',
-      mandatory: true,
-      sourcePage: 1,
-      sourceText: 'Minimum average annual turnover criteria as specified in bid qualification.',
-      confidence: 0.85
     });
   }
 

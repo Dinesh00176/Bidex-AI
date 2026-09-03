@@ -51,7 +51,7 @@ const parseNumericThreshold = (req) => {
 /**
  * Checks domain / industry relevance to prevent General Trading matching IT/Software requirements
  */
-const isIndustryRelevant = (company, requiredDomain = 'it') => {
+const isIndustryRelevant = (company = {}, requiredDomain = 'it') => {
   const industry = (company.industry || '').toLowerCase();
   const services = (company.services || []).join(' ').toLowerCase();
   const skills = (company.technicalSkills || []).join(' ').toLowerCase();
@@ -73,7 +73,7 @@ const isIndustryRelevant = (company, requiredDomain = 'it') => {
 /**
  * Evaluates a single requirement against the company profile and credentials
  */
-const evaluateRequirementMatch = (req, company) => {
+const evaluateRequirementMatch = (req, company = {}) => {
   const category = req.category || 'Eligibility';
   const title = (req.title || '').trim();
   const titleLower = title.toLowerCase();
@@ -81,11 +81,38 @@ const evaluateRequirementMatch = (req, company) => {
   const mandatory = Boolean(req.mandatory);
   const sourcePage = req.sourcePage || 1;
 
+  const tenderEvidence = {
+    document: req.sourceDocument || 'Tender Document',
+    page: sourcePage,
+    quote: req.sourceText || req.description || title
+  };
+
+  const isCompanyProfileProvided = Boolean(
+    company &&
+    (company.companyName || company.annualTurnover || company.yearsExperience || (company.certifications && company.certifications.length > 0) || (company.technicalSkills && company.technicalSkills.length > 0))
+  );
+
+  // If no company evidence is uploaded/provided, every item is strictly NEEDS_REVIEW with companyEvidence = null
+  if (!isCompanyProfileProvided) {
+    return {
+      requirementTitle: title,
+      category,
+      mandatory,
+      status: 'NEEDS_REVIEW',
+      reason: `The tender specifies "${title}", but no company profile or credential evidence was provided to verify bidder compliance.`,
+      tenderEvidence,
+      companyEvidence: null,
+      sourcePage,
+      confidence: 0.95,
+      contribution: '0 points (Pending company evidence)'
+    };
+  }
+
   // Build aggregate company evidence text from profile and documents
   const docSummaries = (company.documents || []).map(d => `${d.title} ${d.docType} ${d.extractedSummary} ${(d.extractedKeyFacts || []).join(' ')}`.toLowerCase());
   const allCompanyEvidenceText = [
-    company.companyName,
-    company.industry,
+    company.companyName || '',
+    company.industry || '',
     (company.services || []).join(' '),
     (company.technicalSkills || []).join(' '),
     (company.certifications || []).join(' '),
@@ -120,6 +147,7 @@ const evaluateRequirementMatch = (req, company) => {
       mandatory: true,
       status: 'CONFLICT',
       reason: `CRITICAL_ANOMALY: Logical impossibility, science-fiction condition, or impossible timeline detected in requirement ("${title}"). Direct literal operational fulfillment is impossible.`,
+      tenderEvidence,
       companyEvidence: 'Direct literal operational overlap impossible for anomalous/sci-fi specification.',
       sourcePage,
       confidence: 0.99,
@@ -132,7 +160,43 @@ const evaluateRequirementMatch = (req, company) => {
   // -------------------------------------------------------------
   if (category === 'Financial' || titleLower.includes('turnover') || titleLower.includes('revenue') || titleLower.includes('net worth') || titleLower.includes('financial')) {
     const isNetWorthReq = titleLower.includes('net worth') || descLower.includes('net worth');
-    const requiredThreshold = parseNumericThreshold(req) || (isNetWorthReq ? 10000000 : 50000000);
+
+    if (isNetWorthReq) {
+      const hasNetWorthProof = allCompanyEvidenceText.includes('positive net worth') ||
+                               allCompanyEvidenceText.includes('net worth certified') ||
+                               allCompanyEvidenceText.includes('balance sheet') ||
+                               (company.documents || []).some(d => (d.extractedKeyFacts || []).some(f => f.toLowerCase().includes('net worth')));
+
+      if (hasNetWorthProof) {
+        return {
+          requirementTitle: title,
+          category: 'Financial',
+          mandatory,
+          status: 'MATCH',
+          reason: 'Audited financial statements certify positive net worth and statutory capital adequacy.',
+          tenderEvidence,
+          companyEvidence: 'Chartered Accountant Certificate: Positive net worth verified in audited balance sheets.',
+          sourcePage,
+          confidence: 0.98,
+          contribution: '+100% compliance score'
+        };
+      } else {
+        return {
+          requirementTitle: title,
+          category: 'Financial',
+          mandatory,
+          status: mandatory ? 'PARTIAL' : 'PARTIAL',
+          reason: 'Net worth confirmation requires formal CA net-worth certificate. Turnover does not substitute for net worth verification.',
+          tenderEvidence,
+          companyEvidence: 'No verified net-worth certificate found in uploaded credential documents (NEEDS REVIEW).',
+          sourcePage,
+          confidence: 0.90,
+          contribution: mandatory ? '0 points (Net-worth certificate missing)' : '35% partial credit'
+        };
+      }
+    }
+
+    const requiredThreshold = parseNumericThreshold(req) || 50000000;
     const companyTurnover = Number(company.annualTurnover) || 0;
 
     if (companyTurnover >= requiredThreshold) {
@@ -144,6 +208,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'MATCH',
         reason: `Company annual turnover (₹${formattedCompany} Cr) meets and exceeds the required threshold of ₹${formattedReq} Cr.`,
+        tenderEvidence,
         companyEvidence: `Audited Financial Record: ₹${companyTurnover.toLocaleString()} ${company.currency || 'INR'} turnover.`,
         sourcePage,
         confidence: 0.98,
@@ -158,6 +223,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'PARTIAL',
         reason: `Company annual turnover (₹${formattedCompany} Cr) is strictly below the required threshold of ₹${formattedReq} Cr.`,
+        tenderEvidence,
         companyEvidence: `Company financial profile shows ₹${companyTurnover.toLocaleString()} ${company.currency || 'INR'} (Gap: ₹${((requiredThreshold - companyTurnover)/10000000).toFixed(2)} Cr).`,
         sourcePage,
         confidence: 0.98,
@@ -170,6 +236,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'MISSING',
         reason: 'Company annual turnover has not been substantiated or is recorded as zero.',
+        tenderEvidence,
         companyEvidence: 'No audited financial records or turnover figures available in profile.',
         sourcePage,
         confidence: 0.95,
@@ -184,8 +251,15 @@ const evaluateRequirementMatch = (req, company) => {
   if (category === 'Experience' || titleLower.includes('experience') || titleLower.includes('track record') || titleLower.includes('years in business') || titleLower.includes('operational years')) {
     const requiredYears = parseNumericThreshold(req) || 5;
     const companyYears = Number(company.yearsExperience) || 0;
+    const isAerospace = descLower.includes('aerospace') || descLower.includes('avionics') || titleLower.includes('aerospace') || titleLower.includes('defense');
     const isItTender = descLower.includes('it') || descLower.includes('software') || descLower.includes('iot') || descLower.includes('cloud') || titleLower.includes('software') || titleLower.includes('smart city');
-    const relevantDomain = isIndustryRelevant(company, isItTender ? 'it' : 'general');
+
+    let relevantDomain = true;
+    if (isAerospace) {
+      relevantDomain = allCompanyEvidenceText.includes('aerospace') || allCompanyEvidenceText.includes('avionics') || (company.industry || '').toLowerCase().includes('aerospace');
+    } else if (isItTender) {
+      relevantDomain = isIndustryRelevant(company, 'it');
+    }
 
     if (companyYears >= requiredYears && relevantDomain) {
       return {
@@ -194,6 +268,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'MATCH',
         reason: `Company has ${companyYears} years of operational experience in ${company.industry || 'relevant sector'}, satisfying the required ${requiredYears} years.`,
+        tenderEvidence,
         companyEvidence: `Corporate profile: ${companyYears} years active in ${company.industry || 'IT & Software'}.`,
         sourcePage,
         confidence: 0.96,
@@ -205,7 +280,8 @@ const evaluateRequirementMatch = (req, company) => {
         category: 'Experience',
         mandatory,
         status: mandatory ? 'CONFLICT' : 'PARTIAL',
-        reason: `Company has ${companyYears} years in business, but operating industry '${company.industry || 'General Trading'}' lacks the required specialized IT/software track record.`,
+        reason: `Company has ${companyYears} years in business, but operating industry '${company.industry || 'General Trading'}' lacks the required specialized domain track record.`,
+        tenderEvidence,
         companyEvidence: `Domain mismatch: Operating as '${company.industry || 'General Trading'}'.`,
         sourcePage,
         confidence: 0.94,
@@ -218,10 +294,11 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'PARTIAL',
         reason: `Company has only ${companyYears} year(s) of operational history in '${company.industry || 'General Trading'}' vs ${requiredYears} years required.`,
+        tenderEvidence,
         companyEvidence: `Operating as '${company.industry || 'General Trading'}' for ${companyYears} year(s).`,
         sourcePage,
         confidence: 0.95,
-        contribution: mandatory ? '0 points (Mandatory duration failed)' : '35% partial credit'
+        contribution: !relevantDomain ? '0 points (Domain relevance failed)' : (mandatory ? '0 points (Mandatory duration failed)' : '35% partial credit')
       };
     } else {
       return {
@@ -230,6 +307,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'MISSING',
         reason: 'Operational experience not documented in company profile.',
+        tenderEvidence,
         companyEvidence: 'No verified experience duration provided.',
         sourcePage,
         confidence: 0.90,
@@ -239,22 +317,28 @@ const evaluateRequirementMatch = (req, company) => {
   }
 
   // -------------------------------------------------------------
-  // 3. CERTIFICATIONS (ISO 9001, ISO 27001, ISO 14001, CMMI)
+  // 3. CERTIFICATIONS & STANDARDS (ISO 9001, ISO 27001, AS9100, ITAR, MIL-STD-810, DO-178C, CMMI)
   // -------------------------------------------------------------
-  if (category === 'Certification' || titleLower.includes('iso') || titleLower.includes('certif') || titleLower.includes('cmmi') || titleLower.includes('appraisal')) {
+  if (category === 'Certification' || titleLower.includes('iso') || titleLower.includes('certif') || titleLower.includes('cmmi') || titleLower.includes('as9100') || titleLower.includes('as9102') || titleLower.includes('itar') || titleLower.includes('mil-std') || titleLower.includes('do-178') || titleLower.includes('do-254') || titleLower.includes('nadcap')) {
     const certTargets = [];
     if (titleLower.includes('9001') || descLower.includes('9001')) certTargets.push('9001');
     if (titleLower.includes('27001') || descLower.includes('27001')) certTargets.push('27001');
     if (titleLower.includes('14001') || descLower.includes('14001')) certTargets.push('14001');
     if (titleLower.includes('20000') || descLower.includes('20000')) certTargets.push('20000');
+    if (titleLower.includes('as9100') || descLower.includes('as9100')) certTargets.push('as9100');
+    if (titleLower.includes('as9102') || descLower.includes('as9102')) certTargets.push('as9102');
+    if (titleLower.includes('itar') || descLower.includes('itar')) certTargets.push('itar');
+    if (titleLower.includes('mil-std') || descLower.includes('mil-std')) certTargets.push('mil-std');
+    if (titleLower.includes('do-178') || descLower.includes('do-178')) certTargets.push('do-178');
+    if (titleLower.includes('do-254') || descLower.includes('do-254')) certTargets.push('do-254');
+    if (titleLower.includes('nadcap') || descLower.includes('nadcap')) certTargets.push('nadcap');
     if (titleLower.includes('cmmi') || descLower.includes('cmmi')) certTargets.push('cmmi');
 
     if (certTargets.length === 0) certTargets.push('iso');
 
-    const companyCerts = (company.certifications || []).map(c => c.toLowerCase());
     const matchedCerts = certTargets.filter(target => allCompanyEvidenceText.includes(target));
 
-    if (matchedCerts.length === certTargets.length && (companyCerts.length > 0 || allCompanyEvidenceText.includes('iso'))) {
+    if (matchedCerts.length === certTargets.length && matchedCerts.length > 0) {
       const matchedCertNames = (company.certifications || []).filter(c => certTargets.some(t => c.toLowerCase().includes(t)));
       return {
         requirementTitle: title,
@@ -262,6 +346,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'MATCH',
         reason: `Company holds verified accredited certification(s) matching requirement (${matchedCertNames.join(', ') || title}).`,
+        tenderEvidence,
         companyEvidence: `Active Accredited Credentials: ${matchedCertNames.join(', ') || (company.certifications || []).join(', ')}.`,
         sourcePage,
         confidence: 0.98,
@@ -273,11 +358,12 @@ const evaluateRequirementMatch = (req, company) => {
         category: 'Certification',
         mandatory,
         status: mandatory ? 'CONFLICT' : 'PARTIAL',
-        reason: `Company possesses some certifications but lacks full coverage for all required standards (${certTargets.join(', ')}).`,
+        reason: `Compound standard requirement unmet: Company possesses ${matchedCerts.join(', ')} but lacks mandatory compliance for ${certTargets.filter(t => !matchedCerts.includes(t)).join(', ')}.`,
+        tenderEvidence,
         companyEvidence: `Partial Credentials: ${(company.certifications || []).join(', ') || 'Partial match'}.`,
         sourcePage,
         confidence: 0.92,
-        contribution: mandatory ? '0 points' : '35% partial credit'
+        contribution: mandatory ? '0 points (Compound requirement unsatisfied)' : '35% partial credit'
       };
     } else {
       return {
@@ -285,7 +371,8 @@ const evaluateRequirementMatch = (req, company) => {
         category: 'Certification',
         mandatory,
         status: mandatory ? 'CONFLICT' : 'MISSING',
-        reason: `No proof or record of '${title}' found in company certifications or uploaded credential documents.`,
+        reason: `No proof or record of required standard(s) (${certTargets.join(', ')}) found in company certifications or uploaded credential documents.`,
+        tenderEvidence,
         companyEvidence: 'Certification is completely absent from company credentials.',
         sourcePage,
         confidence: 0.98,
@@ -297,10 +384,27 @@ const evaluateRequirementMatch = (req, company) => {
   // -------------------------------------------------------------
   // 4. TECHNICAL SKILLS & CAPABILITY MATCHING
   // -------------------------------------------------------------
-  if (category === 'Technical' || titleLower.includes('cloud') || titleLower.includes('iot') || titleLower.includes('software') || titleLower.includes('architecture') || titleLower.includes('uptime') || titleLower.includes('sla') || titleLower.includes('telemetry') || titleLower.includes('security')) {
+  if (category === 'Technical' || titleLower.includes('cloud') || titleLower.includes('iot') || titleLower.includes('software') || titleLower.includes('architecture') || titleLower.includes('uptime') || titleLower.includes('sla') || titleLower.includes('telemetry') || titleLower.includes('security') || titleLower.includes('cnc') || titleLower.includes('milling') || titleLower.includes('avionics')) {
+    const isAerospaceTechReq = titleLower.includes('cnc') || titleLower.includes('milling') || titleLower.includes('titanium') || titleLower.includes('avionics') || titleLower.includes('radar') || descLower.includes('cnc') || descLower.includes('titanium');
+    const isAerospaceCompany = allCompanyEvidenceText.includes('aerospace') || allCompanyEvidenceText.includes('avionics') || allCompanyEvidenceText.includes('cnc') || (company.industry || '').toLowerCase().includes('aerospace');
+
+    if (isAerospaceTechReq && !isAerospaceCompany) {
+      return {
+        requirementTitle: title,
+        category: 'Technical',
+        mandatory,
+        status: mandatory ? 'CONFLICT' : 'MISSING',
+        reason: `Specialized manufacturing / aerospace technical specification ('${title}') cannot be fulfilled by ${company.industry || 'IT & Software'} capability matrix.`,
+        tenderEvidence,
+        companyEvidence: `Domain mismatch: Company active in '${company.industry || 'IT & Software'}' lacks defense manufacturing plant & machine tooling.`,
+        sourcePage,
+        confidence: 0.98,
+        contribution: '0 points (Aerospace manufacturing capability absent)'
+      };
+    }
+
     const rawSkills = (company.technicalSkills || []).map(s => s.toLowerCase());
     const rawServices = (company.services || []).map(s => s.toLowerCase());
-    const combinedTech = [...rawSkills, ...rawServices].join(' ');
 
     // Filter out meaningless generic filler words
     const stopWords = new Set(['the', 'and', 'for', 'with', 'support', 'general', 'service', 'services', 'basic', 'project', 'platform', 'system', 'require', 'required', 'must', 'have', 'solution', 'solutions', 'management', 'trading']);
@@ -330,6 +434,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'MATCH',
         reason: `Company technical portfolio directly demonstrates proven capabilities aligned with '${title}'.`,
+        tenderEvidence,
         companyEvidence: `Demonstrated stack & services: ${matchDetails || (company.technicalSkills || []).slice(0, 4).join(', ')}.`,
         sourcePage,
         confidence: 0.95,
@@ -342,6 +447,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'PARTIAL',
         reason: `Company has general technical capabilities but lacks specific specialized project references for '${title}'.`,
+        tenderEvidence,
         companyEvidence: `Identified capabilities: ${(company.technicalSkills || []).slice(0, 3).join(', ')}.`,
         sourcePage,
         confidence: 0.85,
@@ -354,6 +460,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'MISSING',
         reason: `Company technical profile (${(company.technicalSkills || []).join(', ') || 'None'}) lacks required technical competencies for '${title}'.`,
+        tenderEvidence,
         companyEvidence: `Operating domain '${company.industry || 'General Trading'}' provides no evidence of required technical architecture.`,
         sourcePage,
         confidence: 0.96,
@@ -365,10 +472,26 @@ const evaluateRequirementMatch = (req, company) => {
   // -------------------------------------------------------------
   // 5. STAFFING & KEY PERSONNEL
   // -------------------------------------------------------------
-  if (category === 'Staffing' || titleLower.includes('staff') || titleLower.includes('personnel') || titleLower.includes('manager') || titleLower.includes('headcount') || titleLower.includes('architect')) {
+  if (category === 'Staffing' || titleLower.includes('staff') || titleLower.includes('personnel') || titleLower.includes('manager') || titleLower.includes('headcount') || titleLower.includes('architect') || titleLower.includes('engineer')) {
     const count = Number(company.employeeCount) || 0;
-    const requiredCount = parseNumericThreshold(req) || 15;
+    const isAerospaceStaffReq = titleLower.includes('avionics') || titleLower.includes('aeronautical') || titleLower.includes('aerospace') || descLower.includes('avionics') || descLower.includes('aerospace') || descLower.includes('aeronautical');
     const isTechDomain = isIndustryRelevant(company, 'it');
+    const isAerospaceDomain = allCompanyEvidenceText.includes('aerospace') || allCompanyEvidenceText.includes('avionics') || (company.industry || '').toLowerCase().includes('aerospace');
+
+    if (isAerospaceStaffReq && !isAerospaceDomain) {
+      return {
+        requirementTitle: title,
+        category: 'Staffing',
+        mandatory,
+        status: mandatory ? 'CONFLICT' : 'MISSING',
+        reason: `Company workforce headcount (${count} employees) is in ${company.industry || 'Information Technology'}, lacking certified Lead Avionics / Aeronautical engineering personnel.`,
+        tenderEvidence,
+        companyEvidence: `Domain mismatch: ${count} staff in ${company.industry || 'IT'}, no specialized aeronautical engineering bench.`,
+        sourcePage,
+        confidence: 0.95,
+        contribution: '0 points (Specialized aerospace staffing absent)'
+      };
+    }
 
     if (count >= 30 && isTechDomain) {
       return {
@@ -377,6 +500,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'MATCH',
         reason: `Company workforce headcount (${count} employees) and engineering bench provide robust capacity for dedicated key personnel.`,
+        tenderEvidence,
         companyEvidence: `Staff Strength: ${count} professional employees active in ${company.industry || 'Technology'}.`,
         sourcePage,
         confidence: 0.94,
@@ -389,6 +513,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'PARTIAL',
         reason: `Company has adequate baseline workforce (${count} employees) but may require specialized subcontractor allocation.`,
+        tenderEvidence,
         companyEvidence: `Staff Strength: ${count} employees.`,
         sourcePage,
         confidence: 0.88,
@@ -401,6 +526,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'MISSING',
         reason: `Company employee headcount (${count} employees) in ${company.industry || 'General Trading'} is insufficient to field dedicated qualified key personnel.`,
+        tenderEvidence,
         companyEvidence: `Current team size: ${count} employee(s).`,
         sourcePage,
         confidence: 0.92,
@@ -423,6 +549,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: 'MATCH',
         reason: `Company satisfies statutory eligibility with ${companyYears} years of incorporated legal status.`,
+        tenderEvidence,
         companyEvidence: `Registered corporate entity with ${companyYears} years active registration.`,
         sourcePage,
         confidence: 0.95,
@@ -435,6 +562,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'PARTIAL',
         reason: `Company incorporation duration (${companyYears} year(s)) does not satisfy mandatory eligibility requirement (${requiredYears} years).`,
+        tenderEvidence,
         companyEvidence: `Incorporated for ${companyYears} year(s) only.`,
         sourcePage,
         confidence: 0.95,
@@ -447,6 +575,7 @@ const evaluateRequirementMatch = (req, company) => {
         mandatory,
         status: mandatory ? 'CONFLICT' : 'MISSING',
         reason: 'Statutory registration and incorporation credentials not provided.',
+        tenderEvidence,
         companyEvidence: 'No verified incorporation proof available in profile.',
         sourcePage,
         confidence: 0.90,
@@ -456,54 +585,39 @@ const evaluateRequirementMatch = (req, company) => {
   }
 
   // -------------------------------------------------------------
-  // 7. DOCUMENTS & EARNEST MONEY DEPOSIT (EMD)
+  // 7. DOCUMENTS & EARNEST MONEY DEPOSIT (EMD) — Action Item, not capability
   // -------------------------------------------------------------
   if (category === 'Documents' || titleLower.includes('emd') || titleLower.includes('deposit') || titleLower.includes('tender fee') || titleLower.includes('document')) {
-    const companyTurnover = Number(company.annualTurnover) || 0;
-    const requiredEmd = parseNumericThreshold(req) || 1000000;
-
-    if (companyTurnover >= 30000000) {
-      return {
-        requirementTitle: title,
-        category: 'Documents',
-        mandatory,
-        status: 'MATCH',
-        reason: `Company demonstrates strong financial solvency to submit requisite EMD guarantee (₹${(requiredEmd/100000).toFixed(1)} Lakh).`,
-        companyEvidence: `Financial solvency backed by ₹${(companyTurnover/10000000).toFixed(2)} Cr annual turnover.`,
-        sourcePage,
-        confidence: 0.93,
-        contribution: '+100% compliance score'
-      };
-    } else {
-      return {
-        requirementTitle: title,
-        category: 'Documents',
-        mandatory,
-        status: mandatory ? 'CONFLICT' : 'PARTIAL',
-        reason: `Substantial EMD deposit commitment required. Low turnover (₹${(companyTurnover/10000000).toFixed(2)} Cr) poses bank guarantee issuance constraints.`,
-        companyEvidence: `Turnover ₹${(companyTurnover/10000000).toFixed(2)} Cr limits bank credit lines.`,
-        sourcePage,
-        confidence: 0.90,
-        contribution: mandatory ? '0 points' : '35% partial credit'
-      };
-    }
+    return {
+      requirementTitle: title,
+      category: 'Documents',
+      mandatory,
+      status: 'NEEDS_REVIEW',
+      reason: 'Contractual submission requirement: Bidder must furnish Earnest Money Deposit (EMD) via Bank Guarantee upon bid submission.',
+      tenderEvidence,
+      companyEvidence: 'Action item: Bank Guarantee to be prepared for submission.',
+      sourcePage,
+      confidence: 0.95,
+      contribution: 'Action item: Bid Security Bank Guarantee'
+    };
   }
 
   // -------------------------------------------------------------
   // 8. CONTRACT & TIMELINE
   // -------------------------------------------------------------
-  if (category === 'Timeline' || category === 'Contract' || titleLower.includes('timeline') || titleLower.includes('delivery') || titleLower.includes('liquidated') || titleLower.includes('warranty')) {
+  if (category === 'Timeline' || titleLower.includes('timeline') || titleLower.includes('delivery')) {
     const isTechCompany = isIndustryRelevant(company, 'it');
-    const hasAdequateStaff = (company.employeeCount || 0) >= 20;
+    const hasAdequateStaff = (company.employeeCount || 0) >= 15;
 
     if (isTechCompany && hasAdequateStaff) {
       return {
         requirementTitle: title,
-        category,
+        category: 'Timeline',
         mandatory,
         status: 'MATCH',
-        reason: `Delivery schedule and standard contractual SLA terms assessed as operationally achievable based on established engineering capacity.`,
-        companyEvidence: `Confirmed feasible within established project execution frameworks.`,
+        reason: 'Delivery schedule and milestone execution assessed as operationally achievable based on established engineering capacity.',
+        tenderEvidence,
+        companyEvidence: `Corporate capacity: ${company.employeeCount || 20}+ engineering professionals active in ${company.industry || 'IT'}.`,
         sourcePage,
         confidence: 0.90,
         contribution: '+100% compliance score'
@@ -511,10 +625,11 @@ const evaluateRequirementMatch = (req, company) => {
     } else {
       return {
         requirementTitle: title,
-        category,
+        category: 'Timeline',
         mandatory,
         status: 'PARTIAL',
-        reason: `Contractual execution timeline and liquidated damages pose delivery risk given limited operational capacity in ${company.industry || 'General Trading'}.`,
+        reason: `Contractual execution timeline poses delivery risk given limited operational capacity in ${company.industry || 'General Trading'}.`,
+        tenderEvidence,
         companyEvidence: `Execution risk due to limited organizational footprint (${company.employeeCount || 0} staff).`,
         sourcePage,
         confidence: 0.88,
@@ -523,25 +638,42 @@ const evaluateRequirementMatch = (req, company) => {
     }
   }
 
+  if (category === 'Contract' || titleLower.includes('liquidated') || titleLower.includes('warranty')) {
+    return {
+      requirementTitle: title,
+      category: 'Contract',
+      mandatory,
+      status: 'NEEDS_REVIEW',
+      reason: 'Contractual risk clause: Liquidated damages provisions require formal legal review & operational commitment.',
+      tenderEvidence,
+      companyEvidence: 'Action item: Legal & delivery schedule acceptance.',
+      sourcePage,
+      confidence: 0.92,
+      contribution: 'Action item: Legal & delivery schedule acceptance'
+    };
+  }
+
   // General Fallback
   return {
     requirementTitle: title,
     category,
     mandatory,
-    status: 'UNKNOWN',
+    status: 'NEEDS_REVIEW',
     reason: `Requirement '${title}' requires specialized verification against formal bid submission documentation.`,
-    companyEvidence: 'Pending final bid annexure review.',
+    tenderEvidence,
+    companyEvidence: 'Pending formal bid annexure verification.',
     sourcePage,
     confidence: 0.80,
-    contribution: '20% neutral assessment'
+    contribution: 'Pending verification'
   };
 };
 
 /**
  * Matches all extracted requirements against company profile
  */
-const matchRequirementsWithCompany = (requirements, company) => {
-  logger.info(`Running matching engine for ${requirements.length} requirements against company '${company.companyName}'`);
+const matchRequirementsWithCompany = (requirements, company = {}) => {
+  const compName = company && company.companyName ? company.companyName : 'Tender-Only (No Company Profile)';
+  logger.info(`Running matching engine for ${requirements.length} requirements against company '${compName}'`);
   return requirements.map(req => evaluateRequirementMatch(req, company));
 };
 

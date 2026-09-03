@@ -815,7 +815,7 @@ const TenderAnalysisPage = () => {
                             className="btn btn-secondary btn-sm"
                             style={{ padding: '4px 8px', fontSize: '11.5px', display: 'flex', alignItems: 'center', gap: '4px' }}
                           >
-                            <Bookmark size={12} /> View Source
+                            <Bookmark size={12} /> View Citation
                           </button>
                         </td>
                       </tr>
@@ -827,16 +827,17 @@ const TenderAnalysisPage = () => {
           )}
 
           {/* TAB 3: COMPANY FIT MATCHING */}
+          {/* TAB 3: COMPANY CAPABILITY FIT MATCH */}
           {activeTab === 'matching' && (
             <div className="table-responsive">
               <table className="table">
                 <thead>
                   <tr>
-                    <th style={{ width: '130px' }}>Category</th>
-                    <th>Tender Requirement</th>
+                    <th style={{ width: '110px' }}>Category</th>
+                    <th style={{ width: '280px' }}>Tender Requirement & Citation</th>
                     <th style={{ width: '110px' }}>Match Status</th>
-                    <th>Evaluated Evidence & Reason</th>
-                    <th style={{ width: '90px' }}>Source</th>
+                    <th>Verified Company Evidence & Evaluation</th>
+                    <th style={{ width: '80px' }}>Source</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -849,18 +850,27 @@ const TenderAnalysisPage = () => {
                       </td>
                       <td>
                         <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '13.5px' }}>{m.requirementTitle}</div>
-                        {m.mandatory && <span className="badge badge-danger" style={{ fontSize: '10px', marginTop: '4px' }}>Mandatory</span>}
+                        {m.mandatory && <span className="badge badge-danger" style={{ fontSize: '10px', marginTop: '3px' }}>Mandatory</span>}
+                        <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px', fontStyle: 'italic', background: '#F8FAFC', padding: '4px 6px', borderRadius: '4px' }}>
+                          "{m.tenderEvidence?.quote || m.sourceText || m.requirementTitle}"
+                        </div>
                       </td>
                       <td>
                         <StatusBadge status={m.status} />
                       </td>
                       <td>
                         <div style={{ fontSize: '13px', color: '#1E293B', fontWeight: 500 }}>{m.reason}</div>
-                        {m.companyEvidence && (
-                          <div style={{ fontSize: '12px', color: '#64748B', marginTop: '3px' }}>
-                            <strong>Company Profile:</strong> {m.companyEvidence}
-                          </div>
-                        )}
+                        <div style={{ marginTop: '5px', fontSize: '12px' }}>
+                          {m.companyEvidence ? (
+                            <span style={{ color: '#047857', fontWeight: 500 }}>
+                              <strong>✓ Company Evidence:</strong> {m.companyEvidence}
+                            </span>
+                          ) : (
+                            <span style={{ color: '#B45309', fontWeight: 500 }}>
+                              <strong>⚠ Company Evidence:</strong> Not provided (Pending profile/doc upload)
+                            </span>
+                          )}
+                        </div>
                       </td>
                       <td>
                         <button

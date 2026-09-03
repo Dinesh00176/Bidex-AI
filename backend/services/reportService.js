@@ -30,12 +30,18 @@ const generateExecutiveReport = ({ tender, company, analysis }) => {
       pageCount: tender.pageCount,
       summary: tender.summary || 'Comprehensive procurement tender document analysis.'
     },
-    company: {
-      name: company.companyName,
-      industry: company.industry,
-      yearsExperience: `${company.yearsExperience} Years`,
-      annualTurnover: `₹${(company.annualTurnover / 10000000).toFixed(2)} Cr`,
+    company: (company && (company.companyName || company.annualTurnover || company.yearsExperience)) ? {
+      name: company.companyName || 'Not Specified',
+      industry: company.industry || 'Not Specified',
+      yearsExperience: company.yearsExperience ? `${company.yearsExperience} Years` : 'Not Specified',
+      annualTurnover: company.annualTurnover ? `₹${(company.annualTurnover / 10000000).toFixed(2)} Cr` : 'Not Specified',
       certifications: company.certifications || []
+    } : {
+      name: 'Not Provided (Tender-Only Analysis)',
+      industry: 'Pending Company Profile',
+      yearsExperience: 'Not Provided',
+      annualTurnover: 'Not Provided',
+      certifications: []
     },
     decision: {
       recommendation: decision.recommendation,

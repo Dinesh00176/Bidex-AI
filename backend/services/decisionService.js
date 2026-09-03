@@ -14,7 +14,8 @@ const DEFAULT_WEIGHTS = {
 const calculateCategoryScore = (categoryName, matches, companyHasGeneralFailures = false) => {
   const catMatches = matches.filter(m => {
     if (categoryName === 'compliance') return m.category === 'Certification' || m.category === 'Compliance';
-    if (categoryName === 'eligibility') return m.category === 'Eligibility' || m.category === 'Legal' || m.category === 'Documents';
+    if (categoryName === 'eligibility') return m.category === 'Eligibility' || m.category === 'Legal';
+    if (categoryName === 'documents') return m.category === 'Documents';
     return m.category.toLowerCase() === categoryName.toLowerCase();
   });
 
@@ -31,20 +32,19 @@ const calculateCategoryScore = (categoryName, matches, companyHasGeneralFailures
         totalPoints += 100;
         break;
       case 'PARTIAL':
-        totalPoints += 35;
+        totalPoints += 50;
         break;
+      case 'NEEDS_REVIEW':
       case 'UNKNOWN':
-        totalPoints += 20;
+        totalPoints += m.mandatory ? 30 : 60;
         break;
       case 'MISSING':
       case 'FAIL':
-        totalPoints += 0;
-        break;
       case 'CONFLICT':
-        totalPoints += 0;
+        totalPoints += m.mandatory ? 0 : 25;
         break;
       default:
-        totalPoints += 25;
+        totalPoints += 40;
     }
   });
 
@@ -83,7 +83,8 @@ const computeBidDecision = ({ requirements = [], matches = [], risks = [], weigh
   // Critical Risks
   const criticalRisks = risks.filter(r => r.severity === 'CRITICAL');
   criticalRisks.forEach(cr => {
-    if (!hardFailures.some(hf => hf.includes(cr.title))) {
+    const baseTitle = cr.title.replace(/^Mandatory Requirement Unmet:\s*/i, '').trim();
+    if (!hardFailures.some(hf => hf.includes(baseTitle) || hf.includes(cr.title))) {
       hardFailures.push(`Critical risk: ${cr.title} (${cr.description})`);
     }
   });
@@ -145,17 +146,23 @@ const computeBidDecision = ({ requirements = [], matches = [], risks = [], weigh
   let recommendation = 'BID';
   let overallScore = rawOverallScore;
 
+  const isTenderOnlyMode = matches.length > 0 && matches.every(m => m.status === 'NEEDS_REVIEW' || m.status === 'UNKNOWN');
+
   const hasCriticalAnomaly = matches.some(m => (m.reason || '').includes('CRITICAL_ANOMALY') || (m.requirementTitle || '').includes('CRITICAL_ANOMALY')) ||
                              risks.some(r => (r.title || '').includes('CRITICAL_ANOMALY') || (r.description || '').includes('CRITICAL_ANOMALY'));
 
-  if (hasCriticalAnomaly) {
+  if (isTenderOnlyMode) {
+    recommendation = 'NEEDS REVIEW';
+    overallScore = 0;
+    hardFailures.push('Company evidence not provided: Complete company profile to verify mandatory bidder qualification.');
+  } else if (hasCriticalAnomaly) {
     recommendation = 'NO-BID';
     overallScore = 0;
     hardFailures.unshift('CRITICAL_ANOMALY: Document contains science-fiction requirements, impossible delivery timelines, or logical impossibilities. Immediate NO-BID mandated.');
-  } else if (hardFailures.length >= 3 || (scoreBreakdown.financial === 0 && scoreBreakdown.technical <= 35)) {
+  } else if (hardFailures.length >= 3) {
     recommendation = 'NO-BID';
     overallScore = Math.min(rawOverallScore, 25); // Heavy cap for multiple mandatory failures
-  } else if (hardFailures.length === 2 || scoreBreakdown.financial === 0 || scoreBreakdown.eligibility < 35) {
+  } else if (hardFailures.length === 2) {
     recommendation = 'NO-BID';
     overallScore = Math.min(rawOverallScore, 40);
   } else if (hardFailures.length === 1 || criticalRisks.length > 0) {
@@ -171,7 +178,9 @@ const computeBidDecision = ({ requirements = [], matches = [], risks = [], weigh
 
   // 6. Summary Rationale
   let summaryRationale = '';
-  if (recommendation === 'BID') {
+  if (isTenderOnlyMode || recommendation === 'NEEDS REVIEW') {
+    summaryRationale = 'Tender requirements were successfully extracted, but company evidence is insufficient to verify mandatory bidder eligibility.';
+  } else if (recommendation === 'BID') {
     summaryRationale = `Strong commercial & technical alignment (${overallScore}/100). Company satisfies all core mandatory criteria with verified credentials and specialized domain experience. Recommend proceeding to tender bid preparation.`;
   } else if (recommendation === 'REVIEW') {
     summaryRationale = `Viable opportunity with qualification caveats (${overallScore}/100). Requires executive review to resolve ${hardFailures.length > 0 ? hardFailures[0] : 'compliance & staffing gaps'} before formal bid submission.`;

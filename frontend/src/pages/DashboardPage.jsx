@@ -59,7 +59,11 @@ const DashboardPage = () => {
   const totalTenders = tenders.length;
   const analyzedTenders = tenders.filter(t => t.analysis);
   const bidCount = analyzedTenders.filter(t => t.analysis.recommendation === 'BID').length;
-  const reviewCount = analyzedTenders.filter(t => t.analysis.recommendation === 'REVIEW').length;
+  const reviewCount = analyzedTenders.filter(t => 
+    t.analysis.recommendation === 'REVIEW' || 
+    t.analysis.recommendation === 'NEEDS REVIEW' || 
+    t.analysis.recommendation === 'NEEDS_REVIEW'
+  ).length;
   const noBidCount = analyzedTenders.filter(t => t.analysis.recommendation === 'NO-BID' || t.analysis.recommendation === 'NO_BID').length;
 
   const totalCriticalRisks = analyzedTenders.reduce((sum, t) => sum + (t.analysis.criticalRisksCount || 0), 0);

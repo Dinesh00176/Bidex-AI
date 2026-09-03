@@ -60,7 +60,15 @@ const getTenders = async (req, res, next) => {
 
     // Filter by decision if requested
     if (decision) {
-      results = results.filter(t => t.analysis && t.analysis.recommendation === decision.toUpperCase());
+      const dec = decision.toUpperCase();
+      results = results.filter(t => {
+        if (!t.analysis || !t.analysis.recommendation) return false;
+        const rec = t.analysis.recommendation.toUpperCase();
+        if (dec === 'REVIEW') {
+          return rec === 'REVIEW' || rec === 'NEEDS REVIEW' || rec === 'NEEDS_REVIEW';
+        }
+        return rec === dec;
+      });
     }
 
     res.json({
@@ -246,17 +254,19 @@ const processTenderAsync = async (tenderId, userId) => {
   const tender = await Tender.findById(tenderId);
   if (!tender) return;
 
-  // Retrieve user company profile
-  const company = await Company.findOne({ userId }) || await Company.findOne({ userId: tender.userId });
-  if (!company) {
-    logger.warn(`Company profile incomplete for user ${userId}`);
-    tender.status = 'failed';
-    tender.progress = 0;
-    tender.progressStep = 'Failed: Incomplete company profile';
-    tender.errorMessage = 'Company profile not found. Please complete your company profile before analyzing tenders.';
-    await tender.save();
-    return;
-  }
+  // Retrieve user company profile (or proceed in tender-only mode if no profile exists yet)
+  const company = (await Company.findOne({ userId })) || (await Company.findOne({ userId: tender.userId })) || null;
+  const activeCompany = company || {
+    companyName: '',
+    industry: '',
+    yearsExperience: 0,
+    annualTurnover: 0,
+    employeeCount: 0,
+    certifications: [],
+    technicalSkills: [],
+    services: [],
+    documents: []
+  };
 
   try {
     // Step 1: Extracting Requirements
@@ -302,7 +312,7 @@ const processTenderAsync = async (tenderId, userId) => {
     tender.progressStep = 'Comparing Requirements with Company Capability Matrix';
     await tender.save();
 
-    const matches = matchRequirementsWithCompany(requirements, company);
+    const matches = matchRequirementsWithCompany(requirements, activeCompany);
 
     // Step 4: Risk Evaluation
     tender.progress = 80;
@@ -313,7 +323,7 @@ const processTenderAsync = async (tenderId, userId) => {
       requirements,
       matches,
       tender,
-      company
+      company: activeCompany
     });
 
     // Step 5: Decision Generation
@@ -341,7 +351,7 @@ const processTenderAsync = async (tenderId, userId) => {
     try {
       mlPrediction = modelService.predictFromContext({
         tender,
-        company,
+        company: activeCompany,
         requirements,
         matches,
         risks
@@ -362,7 +372,7 @@ const processTenderAsync = async (tenderId, userId) => {
       { tenderId: tender._id },
       {
         tenderId: tender._id,
-        companyId: company._id,
+        companyId: company ? company._id : null,
         userId: tender.userId,
         requirements,
         matches,
